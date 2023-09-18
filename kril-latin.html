@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kril -> Latin ::: Latin -> Kril</title>
+
+    <style>
+        textarea {
+            width: 95%;
+            height: 400px;
+            padding: 10px; border:3px dashed indigo;
+            background-color:aliceblue;
+            resize: vertical;
+        }
+
+        #error {
+            text-align: center; 
+            margin-top: 3%; 
+            color: brown; 
+            font-size: 40px;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            font-weight: bold;
+        }
+
+        #run {
+            margin-top: 10px;
+            margin-left: 2%;
+            padding: 10px;
+            color: #05a7f1;
+            background-color: aquamarine;
+            border-radius: 5px;
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        #converted {
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            color: #05022e;
+            padding: 3%;
+            text-align: justify;
+        }
+
+        #copy {
+            margin-left: 2%;
+            color: red;
+            padding: 5px;
+        }
+    </style>
+
+</head>
+<body>
+    <div id="error"></div>
+    <div style="text-align: center; margin-top: 3%;">
+        <textarea placeholder="Kril -> Latin :: Latin -> Kril" id="text"></textarea>
+    </div>
+    <div>
+        <button id="run">O'girish</button>
+    </div>
+    <div style="margin-top: 3%;">
+        <hr>
+    </div>
+    <div>
+        <button id="copy">Nusxa olish</button>
+        <p id="converted"></p>
+    </div>
+    <script>
+        let uzUpper = "ABDEFGHIJKLМNОPQRSТUVXYZ".split("");
+        let ruUpper = "АБДЭФГҲИЖКЛМНОПҚРCТУВХЙЗ".split("");
+
+        let extra_uzUpper = ["A", "M", "O", "T", "O'", "G'", "Ts", "Ch", "Sh", "Yu", "Ya", "E", "Yo", "'", "S"];
+        let extra_ruUpper = ["А", "М", "О", "Т", "Ў", "Ғ", "Ц", "Ч", "Ш", "Ю", "Я", "Е", "Ё", "Ъ", "С"];
+
+        function concatTwoArray(arr1, arr2) {
+            if ( Array.isArray(arr1) && Array.isArray(arr2) ) {
+                return arr1.concat(arr2);
+            } else {
+                let error = document.getElementById("error");
+                error.textContent = "Harflarda xatolik bor"
+            }
+        }
+
+        let uz = concatTwoArray(uzUpper, extra_uzUpper);
+        let ru = concatTwoArray(ruUpper, extra_ruUpper);
+
+        function parsingToObject(uz, ru) {
+            if (Array.isArray(uz) && Array.isArray(ru)) {
+                let obj = {};
+                for (let i = 0; i < uz.length; i++) {
+                    obj[obj[ru[i]] = uz[i]] = ru[i];
+                    obj[obj[ru[i].toLowerCase()] = uz[i].toLowerCase()] = ru[i].toLowerCase();
+                }
+                return obj;                
+            } else {
+                let error = document.getElementById("error");
+                error.textContent = "Harflarda xatolik bor"
+            }
+        }
+
+        let parsedObj = parsingToObject(uz, ru);
+        let runBtn = document.getElementById("run");
+
+        function checkingForG(str, tempStr, i) {
+            if (str[i] == "g" && str[i + 1] == "'") {
+                tempStr += "Ғ".toLowerCase();
+                return tempStr;
+            } else if (str[i] == "G" && str[i + 1] == "'") {
+                tempStr += "Ғ";
+                return tempStr;
+            }
+            return false;
+        }
+
+        function checkingForO(str, tempStr, i) {
+            if (str[i] == "o" && str[i + 1] == "'") {
+                tempStr += "Ў".toLowerCase();
+                return tempStr;
+            } else if (str[i] == "O" && str[i + 1] == "'") {
+                tempStr += "Ў";
+                return tempStr;
+            }
+            return false;
+        }
+
+        function checkingForSH(str, tempStr, i) {
+            if (str[i] == "s" && str[i + 1] == "h") {
+                tempStr += "Ш".toLowerCase();
+                return tempStr;
+            } else if (str[i] == "S" && str[i + 1] == "h") {
+                tempStr += "Ш";
+                return tempStr;
+            }
+            return false;
+        }
+
+        function checkingForCH(str, tempStr, i) {
+            
+            if (str[i] == "c" && str[i + 1] == "h") {
+                tempStr += "Ч".toLowerCase();
+                return tempStr;
+            } else if (str[i] == "C" && str[i + 1] == "h") {
+                tempStr += "Ч";
+                return tempStr;
+            }
+            return false;
+        }
+
+        function convertor(str, parsedObj) {
+            let tempStr = "";
+            for (let i = 0; i < str.length; i++) {
+                if (str[i] in parsedObj) {
+                    if (checkingForG(str, tempStr, i)) {
+                        tempStr = checkingForG(str, tempStr, i);
+                        i++;
+                        continue;
+                    }
+                    if (checkingForCH(str, tempStr, i)) {
+                        tempStr = checkingForCH(str, tempStr, i);
+                        i++;
+                        continue;
+                    }
+                    if (checkingForO(str, tempStr, i)) {
+                        tempStr = checkingForO(str, tempStr, i);
+                        i++;
+                        continue;
+                    }
+                    if (checkingForSH(str, tempStr, i)) {
+                        tempStr = checkingForSH(str, tempStr, i);
+                        i++;
+                        continue;
+                    }
+                    tempStr += parsedObj[str[i]];
+                } else if(str[i] == "\n" || str[i] == "\r\n") {
+                    tempStr += "\n";
+                } else {
+                    tempStr += str[i];
+                }
+            }
+            return tempStr;
+        }
+
+        function getStringForConvert() {
+            let textArea = document.getElementById("text");
+            let str = textArea.value;
+            
+            return str;
+        }
+        runBtn.addEventListener('click', () => {
+            let paragraph = document.getElementById("converted");
+            let str = getStringForConvert();
+            let converted = convertor(str, parsedObj)
+            
+            paragraph.innerHTML = converted.replace(/[\r\n]/g, "<br>");
+        })
+
+        let copy = document.getElementById("copy");
+
+        copy.addEventListener("click", () => {
+            let str = getStringForConvert();
+            if (convertor(str, parsedObj)) {
+                navigator.clipboard.writeText(convertor(str, parsedObj)).then(() => {
+                    alert("Kontent vaqtinchalik xotiraga nusxalandi");
+                },() => {
+                    alert("Nusxalashda xatolik bo'ldi");
+                });  
+            }
+        });
+    </script>
+</body>
+</html>
