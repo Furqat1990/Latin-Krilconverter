@@ -42,7 +42,6 @@ class TextProcess {
             dlk[dlk[double.latin] = double.kril] = double.latin;
             dlk[dlk[double.latin.toLowerCase()] = double.kril.toLowerCase()] = double.latin.toLowerCase();
         }
-
         return dlk;
     }
 

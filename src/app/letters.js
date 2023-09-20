@@ -34,10 +34,10 @@ exports.doubles = [
         latin: "Yo",
         kril: "Ё"
     },
-    // {
-    //     latin: "Ye",
-    //     kril: "Е"
-    // },
+    {
+        latin: "Ye",
+        kril: "Е"
+    },
     {
         latin: "'",
         kril: "ъ"
